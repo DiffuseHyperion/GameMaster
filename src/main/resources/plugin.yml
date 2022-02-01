@@ -1,0 +1,5 @@
+name: GameMaster
+version: '${project.version}'
+main: tk.yjservers.gamemaster.GameMaster
+api-version: 1.18
+description: API for my minigame plugins
