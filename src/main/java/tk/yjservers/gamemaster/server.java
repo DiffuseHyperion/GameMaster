@@ -1,14 +1,56 @@
-package tk.yjservers.gamemaster.server;
+package tk.yjservers.gamemaster;
 
 import org.bukkit.Bukkit;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class editServerYAML {
+public class server {
+
+    public boolean editServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newContent, String attemptMessage, String successMessage) {
+        String checkedproperty = null;
+        try {
+            BufferedReader is = new BufferedReader(new FileReader("server.properties"));
+            Properties props = new Properties();
+            props.load(is);
+            checkedproperty = props.getProperty(propertyToCheck);
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (!Objects.equals(checkedproperty, correctConfig)) {
+            Bukkit.getLogger().severe(attemptMessage);
+            StringBuilder oldcontent = new StringBuilder();
+            try {
+                File serverpropfile = new File("server.properties");
+                BufferedReader br = new BufferedReader(new FileReader(serverpropfile));
+                String line = br.readLine();
+                while (line != null)
+                {
+                    oldcontent.append(line).append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                String newcontent = oldcontent.toString().replaceAll(oldContent, newContent);
+                FileWriter writer = new FileWriter(serverpropfile);
+                writer.write(newcontent);
+                br.close();
+                writer.close();
+                Bukkit.getLogger().severe(successMessage);
+                return true;
+            } catch (IOException e) {
+                Bukkit.getLogger().severe("Something went wrong while trying to disable " + propertyToCheck + "! Error log below: ");
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public boolean editServerPropertiesYAML(File filetocheck, String propertyToCheck, Object correctConfig, String oldContent, String newContent, String attemptMessage, String successMessage) {
         try {
             FileReader fr = new FileReader(filetocheck);
@@ -54,5 +96,10 @@ public class editServerYAML {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void restartForConfig() {
+        Bukkit.getLogger().severe("Restarting the server now for edits to take effect. This might take a while!");
+        Bukkit.spigot().restart();
     }
 }

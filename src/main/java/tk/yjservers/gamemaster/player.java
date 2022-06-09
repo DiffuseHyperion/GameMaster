@@ -1,6 +1,7 @@
-package tk.yjservers.gamemaster.player;
+package tk.yjservers.gamemaster;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
@@ -13,10 +14,15 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static org.bukkit.Bukkit.getServer;
+public class player {
 
-public class timer {
-    public void timer (int duration, BukkitRunnable tasktorun, String name, BarColor colour, BarStyle style, HashMap<String, String> replacewords) {
+    public void playSoundToAll(Sound sound) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p.getLocation(), sound, Float.parseFloat("0.6"), 1);
+        }
+    }
+
+    public void timer(int duration, BukkitRunnable tasktorun, String name, BarColor colour, BarStyle style, HashMap<String, String> replacewords) {
         BossBar bossbar = Bukkit.createBossBar(name, colour, style, BarFlag.PLAY_BOSS_MUSIC);
         for (Player p : Bukkit.getOnlinePlayers()) {
             bossbar.addPlayer(p);
@@ -39,6 +45,6 @@ public class timer {
                 bossbar.setTitle(namereplace);
             }
         };
-        task.runTaskTimer(Objects.requireNonNull(getServer().getPluginManager().getPlugin("GameMaster")), 0, 2);
+        task.runTaskTimer(Objects.requireNonNull(Bukkit.getServer().getPluginManager().getPlugin("GameMaster")), 0, 2);
     }
 }
