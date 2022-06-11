@@ -11,7 +11,7 @@ public final class GameMaster extends JavaPlugin implements CommandExecutor {
     public server server;
     public world world;
 
-    protected static Plugin plugin;
+    static Plugin plugin;
 
     @Override
     public void onEnable() {
