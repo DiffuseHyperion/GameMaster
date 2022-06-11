@@ -44,7 +44,7 @@ public class world {
     }
 
     /**
-     * Deletes a world.
+     * Deletes a world. This should be in onLoad().
      * @param worldName The name of the deleted world.
      */
     public void deleteWorld(String worldName) {
