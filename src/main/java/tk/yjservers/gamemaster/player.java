@@ -23,6 +23,7 @@ public class player {
 
     /**
      * Play a sound to all players.
+     * <p>
      * This will play the sound at max volume, and at 1x speed.
      * @param sound Sound to be played.
      */

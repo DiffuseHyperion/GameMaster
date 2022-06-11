@@ -15,21 +15,32 @@ public class world {
 
     /**
      * Creates a world.
+     * <p>
      * The world's name should be different from the name defined in server.properties. Otherwise, it will return the default world.
+     * <p>
      * Use PlayerJoinEvent to teleport people into the world, using p.teleport(World.getSpawnLocation());
      * @param worldName The name of the created world.
-     * @param seed The seed for the world. Null to pick a random seed.
+     * @param seed The seed for the world.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld(String worldName, @Nullable Long seed) {
+    public World createWorld(String worldName, Long seed) {
         WorldCreator worldcreator = new WorldCreator(worldName);
-        if (Objects.isNull(seed)) {
-            long rndseed = new Random().nextLong();
-            worldcreator.seed(rndseed);
-        } else {
-            worldcreator.seed(seed);
-        }
+        worldcreator.seed(seed);
         return worldcreator.createWorld();
+    }
+
+    /**
+     * Creates a world. It will use a random seed.
+     * <p>
+     * The world's name should be different from the name defined in server.properties. Otherwise, it will return the default world.
+     * <p>
+     * Use PlayerJoinEvent to teleport people into the world, using p.teleport(World.getSpawnLocation());
+     * @see #createWorld(String, Long)
+     * @param worldName The name of the created world.
+     * @return Returns the created world, or if a world already exists with the provided name, the existing world.
+     */
+    public World createWorld(String worldName) {
+        return createWorld(worldName, new Random().nextLong());
     }
 
     /**
@@ -47,6 +58,7 @@ public class world {
 
     /**
      * Sets an area with blocks.
+     * <p>
      * loc1 and loc2 must have the same world.
      * @param loc1 A corner of the area being filled.
      * @param loc2 Another corner of the area being filled.
@@ -102,7 +114,9 @@ public class world {
 
     /**
      * Prepares a world for a pregame scenario.
+     * <p>
      * The world spawn will be set at X: 0 Z: 0, and its Y will be at the highest non-air block.
+     * <p>
      * PVP will be off.
      * @param world The affected world.
      * @param setupSpawnPlatform Whether to create a 3x3 dirt platform at 0, 0.
@@ -132,31 +146,35 @@ public class world {
 
     /**
      * Deletes and resets a world.
+     * <p>
      * <a href="https://github.com/Duckulus/Bingo/blob/master/src/main/java/de/amin/bingo/BingoPlugin.java#L94">Code seen here!</a>
      * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
-     * @param name Name of the world being reset. Null to get level-name in server.properties
+     * @param name Name of the world being reset.
      */
-    public void resetWorld(@Nullable String name) {
-        File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
-        try (FileInputStream stream = new FileInputStream(propertiesFile)) {
-            Properties properties = new Properties();
-            properties.load(stream);
+    public void resetWorld(String name) throws IOException {
+        // Getting and deleting the main world
+        File world = new File(Bukkit.getWorldContainer(), name);
+        FileUtils.deleteDirectory(world);
 
-            // Getting and deleting the main world
-            File world = new File(Bukkit.getWorldContainer(), properties.getProperty("level-name"));
-            FileUtils.deleteDirectory(world);
+        // Creating needed directories
+        world.mkdirs();
+        new File(world, "data").mkdirs();
+        new File(world, "datapacks").mkdirs();
+        new File(world, "entities").mkdirs();
+        new File(world, "playerdata").mkdirs();
+        new File(world, "poi").mkdirs();
+        new File(world, "region").mkdirs();
+    }
 
-            // Creating needed directories
-            world.mkdirs();
-            new File(world, "data").mkdirs();
-            new File(world, "datapacks").mkdirs();
-            new File(world, "entities").mkdirs();
-            new File(world, "playerdata").mkdirs();
-            new File(world, "poi").mkdirs();
-            new File(world, "region").mkdirs();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    /**
+     * Deletes and resets a world.
+     * <p>
+     * The name of the world being reset will be the one specified under `level-name` in server.properties.
+     * <p>
+     * <a href="https://github.com/Duckulus/Bingo/blob/master/src/main/java/de/amin/bingo/BingoPlugin.java#L94">Code seen here!</a>
+     * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
+     */
+    public void resetWorld() throws IOException {
+        resetWorld(new server().readServerProperties("level-name"));
     }
 }
