@@ -10,16 +10,14 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static tk.yjservers.gamemaster.GameMaster.plugin;
 
-public class player {
+public class GamePlayer {
 
     /**
      * Play a sound to all players.

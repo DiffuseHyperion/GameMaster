@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class server {
+public class GameServer {
 
     /**
      * Read a property in server.properties.

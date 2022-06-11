@@ -7,18 +7,18 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class GameMaster extends JavaPlugin implements CommandExecutor {
 
-    public player player;
-    public server server;
-    public world world;
+    public GamePlayer GamePlayer;
+    public GameServer GameServer;
+    public GameWorld GameWorld;
 
     static Plugin plugin;
 
     @Override
     public void onEnable() {
         Bukkit.getLogger().info("GameMaster successfully enabled!");
-        player = new player();
-        server = new server();
-        world = new world();
+        this.GamePlayer = new GamePlayer();
+        this.GameServer = new GameServer();
+        this.GameWorld = new GameWorld();
         plugin = this;
     }
 

@@ -3,15 +3,12 @@ package tk.yjservers.gamemaster;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 
-import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Random;
 
-public class world {
+public class GameWorld {
 
     /**
      * Creates a world.
@@ -175,6 +172,6 @@ public class world {
      * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
      */
     public void resetWorld() throws IOException {
-        resetWorld(new server().readServerProperties("level-name"));
+        resetWorld(new GameServer().readServerProperties("level-name"));
     }
 }
