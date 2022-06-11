@@ -3,38 +3,46 @@ package tk.yjservers.gamemaster;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
+import java.util.Properties;
+import java.util.Random;
 
 public class world {
 
     /**
      * Creates a world.
+     * The world's name should be different from the name defined in server.properties. Otherwise, it will return the default world.
+     * Use PlayerJoinEvent to teleport people into the world, using p.teleport(World.getSpawnLocation());
      * @param worldName The name of the created world.
+     * @param seed The seed for the world. Null to pick a random seed.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld(String worldName) {
+    public World createWorld(String worldName, @Nullable Long seed) {
         WorldCreator worldcreator = new WorldCreator(worldName);
-        return Bukkit.createWorld(worldcreator);
+        if (Objects.isNull(seed)) {
+            long rndseed = new Random().nextLong();
+            worldcreator.seed(rndseed);
+        } else {
+            worldcreator.seed(seed);
+        }
+        return worldcreator.createWorld();
     }
 
     /**
      * Deletes a world.
      * @param worldName The name of the deleted world.
-     * @param latch A latch for the method to countdown when the world is deleted.
      */
-    public void deleteWorld(String worldName, CountDownLatch latch) {
+    public void deleteWorld(String worldName) {
         assert worldName != null;
-        for (; true; ) {
+        File oldworld = new File(Bukkit.getWorldContainer().getAbsolutePath() + "/" + worldName);
+        do {
             Bukkit.unloadWorld(worldName, false);
-            File oldworld = new File(Bukkit.getWorldContainer().getAbsolutePath() + "/" + worldName);
             FileUtils.deleteQuietly(oldworld);
-            if (!oldworld.exists()) {
-                latch.countDown();
-                break;
-            }
-        }
+        } while (oldworld.exists());
     }
 
     /**
@@ -120,5 +128,35 @@ public class world {
         world.getWorldBorder().setWarningTime(warningTime);
         world.getWorldBorder().setWarningDistance(warningDist);
         world.setPVP(false);
+    }
+
+    /**
+     * Deletes and resets a world.
+     * <a href="https://github.com/Duckulus/Bingo/blob/master/src/main/java/de/amin/bingo/BingoPlugin.java#L94">Code seen here!</a>
+     * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
+     * @param name Name of the world being reset. Null to get level-name in server.properties
+     */
+    public void resetWorld(@Nullable String name) {
+        File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
+        try (FileInputStream stream = new FileInputStream(propertiesFile)) {
+            Properties properties = new Properties();
+            properties.load(stream);
+
+            // Getting and deleting the main world
+            File world = new File(Bukkit.getWorldContainer(), properties.getProperty("level-name"));
+            FileUtils.deleteDirectory(world);
+
+            // Creating needed directories
+            world.mkdirs();
+            new File(world, "data").mkdirs();
+            new File(world, "datapacks").mkdirs();
+            new File(world, "entities").mkdirs();
+            new File(world, "playerdata").mkdirs();
+            new File(world, "poi").mkdirs();
+            new File(world, "region").mkdirs();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
