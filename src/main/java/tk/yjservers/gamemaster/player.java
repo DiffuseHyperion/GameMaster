@@ -81,9 +81,9 @@ public class player {
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
      * @param colour The colour of the bossbar.
      * @param style The style of the bossbar.
-     * @param tasktorun A BukkitRunnable to run when the timer expires. This can be null.
+     * @param tasktorun A BukkitRunnable to run when the timer expires.
      */
-    public BossBar timer(Player p, int duration, String title, BarColor colour, BarStyle style, @Nullable BukkitRunnable tasktorun) {
+    public BossBar timer(Player p, int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
         BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
         bossbar.addPlayer(p);
         double[] timer = {duration};
@@ -104,7 +104,44 @@ public class player {
                 timer[0] = BigDecimal.valueOf(timer[0]).subtract(BigDecimal.valueOf(0.1)).doubleValue();
                 if (timer[0] <= 0) {
                     bossbar.removeAll();
-                    if (!Objects.isNull(tasktorun)) {tasktorun.run();}
+                    tasktorun.run();
+                    this.cancel();
+                }
+            }
+        };
+        task.runTaskTimer(plugin, 0, 2);
+        return bossbar;
+    }
+
+    /**
+     * Creates a timer using a bossbar. It will run a BukkitRunnable when completed.
+     * @param p Player to give the timer to.
+     * @param duration The duration of the timer.
+     * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
+     * @param colour The colour of the bossbar.
+     * @param style The style of the bossbar.
+     */
+    public BossBar timer(Player p, int duration, String title, BarColor colour, BarStyle style) {
+        BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
+        bossbar.addPlayer(p);
+        double[] timer = {duration};
+        BukkitRunnable task = new BukkitRunnable() {
+            @Override
+            public void run() {
+                bossbar.setProgress(BigDecimal.valueOf(timer[0]).divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).doubleValue());
+
+                title.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timer[0]));
+                title.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(duration - timer[0]));
+                List<String> list = new ArrayList<>();
+                for (Player pl : bossbar.getPlayers()) {
+                    list.add(pl.getDisplayName());
+                }
+                title.replace(timerReplacement.PLAYERS_SHOWN.getString(), StringUtils.join(list, ", "));
+                bossbar.setTitle(title);
+
+                timer[0] = BigDecimal.valueOf(timer[0]).subtract(BigDecimal.valueOf(0.1)).doubleValue();
+                if (timer[0] <= 0) {
+                    bossbar.removeAll();
                     this.cancel();
                 }
             }
