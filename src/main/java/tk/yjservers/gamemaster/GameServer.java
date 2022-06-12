@@ -1,6 +1,10 @@
 package tk.yjservers.gamemaster;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -9,12 +13,14 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static tk.yjservers.gamemaster.GameMaster.plugin;
+
 public class GameServer {
 
     /**
      * Read a property in server.properties.
      * <p>
-     * You should use {@link #editServerProperties(String, String, String, String)} if you want to edit server.properties.
+     * You should use {@link #checkAndEditServerProperties(String, String, String, String)} if you want to edit server.properties.
      * @param propertyName Name of the property to check.
      * @return Value of the property.
      */
@@ -33,16 +39,43 @@ public class GameServer {
      * @param newProperty What should the correct line look like.
      * @return If a change was required.
      */
-    public boolean editServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newProperty) throws IOException {
+    public boolean checkAndEditServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newProperty) throws IOException {
         String checkedproperty = readServerProperties(propertyToCheck);
-        File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
+
         if (!Objects.equals(checkedproperty, correctConfig)) {
+            File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
             String newcontent = readFile(propertiesFile).replaceAll(oldContent, newProperty);
             writeFile(newcontent, propertiesFile);
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Reads a property in a YAML file.
+     * <p>
+     * You should use {@link #checkAndEditYAML(File, String, String, String)} if you want to edit the YAML file.
+     * @param ymlFile The file to check.
+     * @param property The property in the file to check. This should be a regex.
+     * @return The property value.
+     */
+    public String readYMLFile(File ymlFile, String property) throws FileNotFoundException {
+        FileReader fr = new FileReader(ymlFile);
+        Yaml yaml = new Yaml();
+        String fullyaml = yaml.load(fr).toString();
+
+        Pattern pattern = Pattern.compile(property);
+        Matcher matcher = pattern.matcher(fullyaml);
+        // neededproperty is the line where the property is concerned
+        String neededProperty = null;
+        if (matcher.find()) {
+            neededProperty = matcher.group(0);
+        } else {
+            Bukkit.getLogger().severe("Something went wrong while editing " + ymlFile.getName() + ", This is a plugin issue!");
+        }
+
+        return Objects.requireNonNull(neededProperty).substring(neededProperty.lastIndexOf("=") + 1);
     }
 
     /**
@@ -54,25 +87,11 @@ public class GameServer {
      * @return If a change was required.
      */
     public boolean checkAndEditYAML(File fileToCheck, String propertyToCheck, String correctConfig, String newProperty) throws IOException {
-        FileReader fr = new FileReader(fileToCheck);
-        Yaml yaml = new Yaml();
-        String fullyaml = yaml.load(fr).toString();
-
-        Pattern pattern = Pattern.compile(propertyToCheck);
-        Matcher matcher = pattern.matcher(fullyaml);
-        // neededproperty is the line where the property is concerned
-        String neededProperty = null;
-        if (matcher.find()) {
-            neededProperty = matcher.group(0);
-        } else {
-            Bukkit.getLogger().severe("Something went wrong while editing " + fileToCheck.getName() + ", This is a plugin issue!");
-        }
-
-        String valueOfProperty = Objects.requireNonNull(neededProperty).substring(neededProperty.lastIndexOf("=") + 1);
+        String valueOfProperty = readYMLFile(fileToCheck, propertyToCheck);
         // the value of neededProperty
 
         if (!Objects.equals(valueOfProperty, correctConfig)) {
-            String newcontent = readFile(fileToCheck).replaceAll(neededProperty, newProperty);
+            String newcontent = readFile(fileToCheck).replaceAll(propertyToCheck, newProperty);
             writeFile(newcontent, fileToCheck);
             return true;
         } else {
@@ -110,6 +129,8 @@ public class GameServer {
 
     /**
      * Replace EVERYTHING in a file with a string.
+     * Use line terminators if you want to use additional lines.
+     * @see lineTerminators
      * @param content The content to write.
      * @param file The file to be written to.
      */
@@ -143,16 +164,16 @@ public class GameServer {
     public boolean checkForServerProperties(boolean disableSpawnProtection, boolean disableNether, boolean disableEnd, boolean enableFlight) throws IOException {
         boolean neededChange = false;
         if (disableSpawnProtection) {
-            neededChange = this.editServerProperties("spawn-protection", "0", "spawn-protection=\\d+", "spawn-protection=0");
+            neededChange = checkAndEditServerProperties("spawn-protection", "0", "spawn-protection=\\d+", "spawn-protection=0");
         }
         if (disableNether) {
-            neededChange = this.editServerProperties("allow-nether", "false", "allow-nether=[a-zA-Z]+", "allow-nether=false");
+            neededChange = checkAndEditServerProperties("allow-nether", "false", "allow-nether=[a-zA-Z]+", "allow-nether=false");
         }
         if (disableEnd) {
-            neededChange = this.checkAndEditYAML(new File("bukkit.yml"), "allow-end=[a-zA-Z]+", "false", "allow-end: false");
+            neededChange = checkAndEditYAML(new File("bukkit.yml"), "allow-end=[a-zA-Z]+", "false", "allow-end: false");
         }
         if (enableFlight) {
-            neededChange = this.editServerProperties("allow-flight", "true", "allow-flight=[a-zA-Z]+", "allow-flight=true");
+            neededChange = checkAndEditServerProperties("allow-flight", "true", "allow-flight=[a-zA-Z]+", "allow-flight=true");
         }
         return neededChange;
     }
@@ -165,5 +186,121 @@ public class GameServer {
      */
     public boolean checkForServerProperties() throws IOException {
         return checkForServerProperties(true, true, true, true);
+    }
+
+    /**
+     * All recognised types of operating system.
+     * @see #getOS()
+     */
+    public enum OSTypes {
+        Windows,
+        Mac,
+        Unix,
+        Solaris,
+        Unknown
+    }
+
+    /**
+     * Get the system's operating system.
+     * @see OSTypes
+     * @return The operating system.
+     */
+    public OSTypes getOS() {
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            return OSTypes.Windows;
+        } else if (os.contains("mac")) {
+            return OSTypes.Mac;
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+            return OSTypes.Unix;
+        } else if (os.contains("sunos")) {
+            return OSTypes.Solaris;
+        } else {
+            return OSTypes.Unknown;
+        }
+    }
+
+    /**
+     * Line terminators for writing files.
+     * @see #writeFile(String, File)
+     */
+    public enum lineTerminators {
+        /**
+         * Line terminator for windows.
+         */
+        Windows("\r\n"),
+        /**
+         * Line terminator for unix.
+         */
+        Unix("\n");
+
+        private final String lineTerminators;
+        lineTerminators(String str) {lineTerminators = str;}
+        public String getString() {return lineTerminators;}
+    }
+
+    /**
+     * Attempts to setup a batch/bash script for spigot to use when restarting.
+     * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
+     * @param OS The OS of the system. {@link #getOS()}
+     * @return If the setup was required.
+     */
+    public boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException{
+        if (OS.equals(OSTypes.Unknown)) {
+            throw new IllegalArgumentException("Unknown operating system given as parameter!");
+        }
+        String restartScriptName = readYMLFile(new File("spigot.yml"), "restart-script: .+");
+        File restartScript = new File(restartScriptName);
+        if (restartScript.exists()) {
+            return false;
+        }
+
+        File restartBatch = new File("restart.bat");
+        File restartUnix = new File("restart.sh");
+        if (OS.equals(OSTypes.Windows)) {
+            restartBatch.createNewFile();
+        } else {
+            restartBatch.createNewFile();
+        }
+        switch (OS) {
+            case Windows:
+                writeFile("java -jar " + getServerJar().getName() + " --nogui", restartBatch);
+            case Mac:
+            case Unix:
+                writeFile("#!/bin/sh" + lineTerminators.Unix + "java -jar " + getServerJar().getName() + " --nogui", restartUnix);
+            case Solaris:
+                writeFile("#!/usr/xpg4/bin/sh" + lineTerminators.Unix + "java -jar " + getServerJar().getName() + " --nogui", restartUnix);
+        }
+
+        if (OS.equals(OSTypes.Windows)) {
+            checkAndEditYAML(new File("spigot.yml"), "restart-script: .+", restartScriptName, "restart-script: restart.bat");
+        } else {
+            checkAndEditYAML(new File("spigot.yml"), "restart-script: .+", restartScriptName, "restart-script: restart.sh");
+        }
+        return true;
+    }
+
+    /**
+     * Get a FileConfiguration.
+     * If the config file doesn't exist, it will create the file.
+     * @param plugin Your plugin.
+     * @param filename The config name.
+     * @return The FileConfiguration of the file.
+     */
+    private FileConfiguration getConfig(JavaPlugin plugin, String filename) {
+        // load the file's config
+        YamlConfiguration config = new YamlConfiguration();
+        File file = new File(plugin.getDataFolder(), filename);
+        if (!file.exists()) {
+            // file no exist
+            file.getParentFile().mkdirs();
+            plugin.saveResource(filename, true);
+        }
+        try {
+            config.load(file);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
+        return config;
     }
 }
