@@ -5,15 +5,10 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static tk.yjservers.gamemaster.GameMaster.plugin;
 
 public class GameServer {
 
@@ -36,15 +31,15 @@ public class GameServer {
      * @param propertyToCheck The property in the file to check. (Example: level-name)
      * @param correctConfig What should propertyToCheck be.
      * @param oldContent What an old line could look like. This should be a regex. (Example: spawn-protection=\\d+)
-     * @param newProperty What should the correct line look like.
+     * @param newContent What should the correct line look like.
      * @return If a change was required.
      */
-    public boolean checkAndEditServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newProperty) throws IOException {
+    public boolean checkAndEditServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newContent) throws IOException {
         String checkedproperty = readServerProperties(propertyToCheck);
 
         if (!Objects.equals(checkedproperty, correctConfig)) {
             File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
-            String newcontent = readFile(propertiesFile).replaceAll(oldContent, newProperty);
+            String newcontent = readFile(propertiesFile).replaceAll(oldContent, newContent);
             writeFile(newcontent, propertiesFile);
             return true;
         } else {
@@ -55,43 +50,31 @@ public class GameServer {
     /**
      * Reads a property in a YAML file.
      * <p>
-     * You should use {@link #checkAndEditYAML(File, String, String, String)} if you want to edit the YAML file.
+     * You should use {@link #checkAndEditYAML(File, String, String, String, String)} if you want to edit the YAML file.
      * @param ymlFile The file to check.
-     * @param property The property in the file to check. This should be a regex.
+     * @param property The property in the file to check. (Example: settings.allow-end)
      * @return The property value.
      */
-    public String readYMLFile(File ymlFile, String property) throws FileNotFoundException {
-        FileReader fr = new FileReader(ymlFile);
-        Yaml yaml = new Yaml();
-        String fullyaml = yaml.load(fr).toString();
-
-        Pattern pattern = Pattern.compile(property);
-        Matcher matcher = pattern.matcher(fullyaml);
-        // neededproperty is the line where the property is concerned
-        String neededProperty = null;
-        if (matcher.find()) {
-            neededProperty = matcher.group(0);
-        } else {
-            Bukkit.getLogger().severe("Something went wrong while editing " + ymlFile.getName() + ", This is a plugin issue!");
-        }
-
-        return Objects.requireNonNull(neededProperty).substring(neededProperty.lastIndexOf("=") + 1);
+    public String readYMLFile(File ymlFile, String property) throws IOException, InvalidConfigurationException {
+        YamlConfiguration ymlConfig = new YamlConfiguration();
+        ymlConfig.load(ymlFile);
+        return ymlConfig.getString(property);
     }
 
     /**
      * Check and edit a property in a YAML file.
      * @param fileToCheck The file to check.
-     * @param propertyToCheck The property in the file to check. This should be a regex.
+     * @param propertyToCheck The property in the file to check. (Example: settings.allow-end)
      * @param correctConfig What should propertyToCheck be.
-     * @param newProperty What should the correct line look like.
+     * @param newContent What should the correct line look like.
      * @return If a change was required.
      */
-    public boolean checkAndEditYAML(File fileToCheck, String propertyToCheck, String correctConfig, String newProperty) throws IOException {
+    public boolean checkAndEditYAML(File fileToCheck, String propertyToCheck, String correctConfig, String oldContent, String newContent) throws IOException, InvalidConfigurationException {
         String valueOfProperty = readYMLFile(fileToCheck, propertyToCheck);
         // the value of neededProperty
 
         if (!Objects.equals(valueOfProperty, correctConfig)) {
-            String newcontent = readFile(fileToCheck).replaceAll(propertyToCheck, newProperty);
+            String newcontent = readFile(fileToCheck).replaceAll(oldContent, newContent);
             writeFile(newcontent, fileToCheck);
             return true;
         } else {
@@ -161,7 +144,7 @@ public class GameServer {
      * @param enableFlight Disable minecraft's anticheat? (it sucks)
      * @return If a change was required.
      */
-    public boolean checkForServerProperties(boolean disableSpawnProtection, boolean disableNether, boolean disableEnd, boolean enableFlight) throws IOException {
+    public boolean checkForServerProperties(boolean disableSpawnProtection, boolean disableNether, boolean disableEnd, boolean enableFlight) throws IOException, InvalidConfigurationException {
         boolean neededChange = false;
         if (disableSpawnProtection) {
             neededChange = checkAndEditServerProperties("spawn-protection", "0", "spawn-protection=\\d+", "spawn-protection=0");
@@ -170,7 +153,7 @@ public class GameServer {
             neededChange = checkAndEditServerProperties("allow-nether", "false", "allow-nether=[a-zA-Z]+", "allow-nether=false");
         }
         if (disableEnd) {
-            neededChange = checkAndEditYAML(new File("bukkit.yml"), "allow-end=[a-zA-Z]+", "false", "allow-end: false");
+            neededChange = checkAndEditYAML(new File("bukkit.yml"), "settings.allow-end", "false", "allow-end: [a-zA-Z]+", "allow-end: false");
         }
         if (enableFlight) {
             neededChange = checkAndEditServerProperties("allow-flight", "true", "allow-flight=[a-zA-Z]+", "allow-flight=true");
@@ -184,7 +167,7 @@ public class GameServer {
      * @see #checkForServerProperties(boolean, boolean, boolean, boolean)
      * @return If a change was required.
      */
-    public boolean checkForServerProperties() throws IOException {
+    public boolean checkForServerProperties() throws IOException, InvalidConfigurationException {
         return checkForServerProperties(true, true, true, true);
     }
 
@@ -245,11 +228,11 @@ public class GameServer {
      * @param OS The OS of the system. {@link #getOS()}
      * @return If the setup was required.
      */
-    public boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException{
+    public boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException, InvalidConfigurationException {
         if (OS.equals(OSTypes.Unknown)) {
             throw new IllegalArgumentException("Unknown operating system given as parameter!");
         }
-        String restartScriptName = readYMLFile(new File("spigot.yml"), "restart-script: .+");
+        String restartScriptName = readYMLFile(new File("spigot.yml"), "restart-script=[^,]+");
         File restartScript = new File(restartScriptName);
         if (restartScript.exists()) {
             return false;
@@ -273,9 +256,9 @@ public class GameServer {
         }
 
         if (OS.equals(OSTypes.Windows)) {
-            checkAndEditYAML(new File("spigot.yml"), "restart-script: .+", restartScriptName, "restart-script: restart.bat");
+            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", restartScriptName, "restart-script: [^,]+", "restart-script: restart.bat");
         } else {
-            checkAndEditYAML(new File("spigot.yml"), "restart-script: .+", restartScriptName, "restart-script: restart.sh");
+            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", restartScriptName, "restart-script: [^,]+", "restart-script: restart.sh");
         }
         return true;
     }
