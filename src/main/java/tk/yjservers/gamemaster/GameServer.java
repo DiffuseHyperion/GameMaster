@@ -29,6 +29,7 @@ public class GameServer {
      * Check and edit a property in the server's server.properties.
      * @param propertyToCheck The property in the file to check. (Example: level-name)
      * @param correctConfig What should propertyToCheck be.
+     * @param oldContent What an old line could look like. This should be a regex. (Example: spawn-protection=\\d+)
      * @param newProperty What should the correct line look like.
      * @return If a change was required.
      */
@@ -128,5 +129,41 @@ public class GameServer {
                 .getCodeSource()
                 .getLocation()
                 .getPath());
+
+    }
+
+    /**
+     * Check and edits common server properties.
+     * @param disableSpawnProtection Disable spawn protection?
+     * @param disableNether Disable nether?
+     * @param disableEnd Disable end?
+     * @param enableFlight Disable minecraft's anticheat? (it sucks)
+     * @return If a change was required.
+     */
+    public boolean checkForServerProperties(boolean disableSpawnProtection, boolean disableNether, boolean disableEnd, boolean enableFlight) throws IOException {
+        boolean neededChange = false;
+        if (disableSpawnProtection) {
+            neededChange = this.editServerProperties("spawn-protection", "0", "spawn-protection=\\d+", "spawn-protection=0");
+        }
+        if (disableNether) {
+            neededChange = this.editServerProperties("allow-nether", "false", "allow-nether=[a-zA-Z]+", "allow-nether=false");
+        }
+        if (disableEnd) {
+            neededChange = this.checkAndEditYAML(new File("bukkit.yml"), "allow-end=[a-zA-Z]+", "false", "allow-end: false");
+        }
+        if (enableFlight) {
+            neededChange = this.editServerProperties("allow-flight", "true", "allow-flight=[a-zA-Z]+", "allow-flight=true");
+        }
+        return neededChange;
+    }
+
+    /**
+     * Checks and edits common server properties.
+     * This will disable spawn protection, nether, end and minecraft's anticheat.
+     * @see #checkForServerProperties(boolean, boolean, boolean, boolean)
+     * @return If a change was required.
+     */
+    public boolean checkForServerProperties() throws IOException {
+        return checkForServerProperties(true, true, true, true);
     }
 }
