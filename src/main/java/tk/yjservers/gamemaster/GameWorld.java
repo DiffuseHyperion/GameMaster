@@ -13,26 +13,42 @@ public class GameWorld {
     /**
      * Creates a world.
      * <p>
-     * The world's name should be different from the name defined in server.properties. Otherwise, it will return the default world.
+     * The world should not exist, or this method will return that world.
      * <p>
      * Use PlayerJoinEvent to teleport people into the world, using p.teleport(World.getSpawnLocation());
      * @param worldName The name of the created world.
      * @param seed The seed for the world.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld(String worldName, Long seed) {
+    public World createWorld(String worldName, Long seed, World.Environment env, WorldType type) {
         WorldCreator worldcreator = new WorldCreator(worldName);
         worldcreator.seed(seed);
+        worldcreator.environment(env);
+        worldcreator.type(type);
         return worldcreator.createWorld();
+    }
+
+    /**
+     * Creates a world. The world will be a normal overworld.
+     * <p>
+     * The world should not exist, or this method will return that world.
+     * <p>
+     * Use PlayerJoinEvent to teleport people into the world, using p.teleport(World.getSpawnLocation());
+     * @see #createWorld(String, Long, World.Environment, WorldType)
+     * @param worldName The name of the created world.
+     * @return Returns the created world, or if a world already exists with the provided name, the existing world.
+     */
+    public World createWorld(String worldName, Long seed) {
+        return createWorld(worldName, seed, World.Environment.NORMAL, WorldType.NORMAL);
     }
 
     /**
      * Creates a world. It will use a random seed.
      * <p>
-     * The world's name should be different from the name defined in server.properties. Otherwise, it will return the default world.
+     * The world should not exist, or this method will return that world.
      * <p>
      * Use PlayerJoinEvent to teleport people into the world, using p.teleport(World.getSpawnLocation());
-     * @see #createWorld(String, Long)
+     * @see #createWorld(String, Long, World.Environment, WorldType)
      * @param worldName The name of the created world.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
