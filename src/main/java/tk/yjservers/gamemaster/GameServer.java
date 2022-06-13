@@ -225,11 +225,41 @@ public class GameServer {
 
     /**
      * Attempts to setup a batch/bash script for spigot to use when restarting.
+     * <p>
+     * The OS will be automatically gotten. If it is unknown, it will throw {@link IllegalArgumentException}
+     * <p>
+     * The server jar file will be automatically gotten. This will likely fail!
+     * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
+     * @return If the setup was required.
+     */
+    public boolean setupRestart() throws IOException, IllegalArgumentException, InvalidConfigurationException {
+        return setupRestart(getOS(), getServerJar().getName());
+    }
+
+    /**
+     * Attempts to setup a batch/bash script for spigot to use when restarting.
+     * <p>
+     * The server jar file will be automatically gotten. This will likely fail!
      * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
      * @param OS The OS of the system. {@link #getOS()}
      * @return If the setup was required.
      */
     public boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException, InvalidConfigurationException {
+        return setupRestart(OS, getServerJar().getName());
+    }
+
+    /**
+     * Attempts to setup a batch/bash script for spigot to use when restarting.
+     * <p>
+     * The OS will be automatically gotten. If it is unknown, it will throw {@link IllegalArgumentException}
+     * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
+     * @return If the setup was required.
+     */
+    public boolean setupRestart(String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
+        return setupRestart(getOS(), serverJar);
+    }
+
+    public boolean setupRestart(OSTypes OS, String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
         if (OS.equals(OSTypes.Unknown)) {
             throw new IllegalArgumentException("Unknown operating system given as parameter!");
         }
@@ -248,14 +278,14 @@ public class GameServer {
         }
         switch (OS) {
             case Windows:
-                writeFile("java -jar " + getServerJar().getName() + " --nogui", restartBatch);
+                writeFile("java -jar " + serverJar + " --nogui", restartBatch);
                 break;
             case Mac:
             case Unix:
-                writeFile("#!/bin/sh" + lineTerminators.Unix + "java -jar " + getServerJar().getName() + " --nogui", restartUnix);
+                writeFile("#!/bin/sh" + lineTerminators.Unix + "java -jar " +   serverJar + " --nogui", restartUnix);
                 break;
             case Solaris:
-                writeFile("#!/usr/xpg4/bin/sh" + lineTerminators.Unix + "java -jar " + getServerJar().getName() + " --nogui", restartUnix);
+                writeFile("#!/usr/xpg4/bin/sh" + lineTerminators.Unix + "java -jar " +  serverJar + " --nogui", restartUnix);
                 break;
         }
 
