@@ -66,6 +66,7 @@ public class GameServer {
      * @param fileToCheck The file to check.
      * @param propertyToCheck The property in the file to check. (Example: settings.allow-end)
      * @param correctConfig What should propertyToCheck be.
+     * @param oldContent What an old line could look like. This should be a regex.
      * @param newContent What should the correct line look like.
      * @return If a change was required.
      */
@@ -232,7 +233,7 @@ public class GameServer {
         if (OS.equals(OSTypes.Unknown)) {
             throw new IllegalArgumentException("Unknown operating system given as parameter!");
         }
-        String restartScriptName = readYMLFile(new File("spigot.yml"), "restart-script=[^,]+");
+        String restartScriptName = readYMLFile(new File("spigot.yml"), "settings.restart-script");
         File restartScript = new File(restartScriptName);
         if (restartScript.exists()) {
             return false;
@@ -248,17 +249,20 @@ public class GameServer {
         switch (OS) {
             case Windows:
                 writeFile("java -jar " + getServerJar().getName() + " --nogui", restartBatch);
+                break;
             case Mac:
             case Unix:
                 writeFile("#!/bin/sh" + lineTerminators.Unix + "java -jar " + getServerJar().getName() + " --nogui", restartUnix);
+                break;
             case Solaris:
                 writeFile("#!/usr/xpg4/bin/sh" + lineTerminators.Unix + "java -jar " + getServerJar().getName() + " --nogui", restartUnix);
+                break;
         }
 
         if (OS.equals(OSTypes.Windows)) {
-            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", restartScriptName, "restart-script: [^,]+", "restart-script: restart.bat");
+            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: restart.bat");
         } else {
-            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", restartScriptName, "restart-script: [^,]+", "restart-script: restart.sh");
+            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: restart.sh");
         }
         return true;
     }
