@@ -259,16 +259,15 @@ public class GameServer {
         return setupRestart(getOS(), serverJar);
     }
 
+    /**
+     * Attempts to setup a batch/bash script for spigot to use when restarting.
+     * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
+     * @return If the setup was required.
+     */
     public boolean setupRestart(OSTypes OS, String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
-        if (OS.equals(OSTypes.Unknown)) {
-            throw new IllegalArgumentException("Unknown operating system given as parameter!");
-        }
-        String restartScriptName = readYMLFile(new File("spigot.yml"), "settings.restart-script");
-        File restartScript = new File(restartScriptName);
-        if (restartScript.exists()) {
+        if (restartSetup()) {
             return false;
         }
-
         File restartBatch = new File("restart.bat");
         File restartUnix = new File("restart.sh");
         if (OS.equals(OSTypes.Windows)) {
@@ -292,9 +291,20 @@ public class GameServer {
         if (OS.equals(OSTypes.Windows)) {
             checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: restart.bat");
         } else {
-            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: restart.sh");
+            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: ./restart.sh");
         }
         return true;
+    }
+
+    /**
+     * Check if restarting is configured.
+     * @return If it is configured.
+     */
+    public boolean restartSetup() throws IOException, InvalidConfigurationException {
+        String value = readYMLFile(new File("spigot.yml"), "settings.restart-script");
+        String restartScriptName = value.replace("./", "");
+        File restartScript = new File(restartScriptName);
+        return restartScript.exists();
     }
 
     /**
