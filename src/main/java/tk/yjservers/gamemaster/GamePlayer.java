@@ -50,7 +50,7 @@ public class GamePlayer {
     }
 
     /**
-     * Enums for replacements in {@link #timer(Player, int, String, BarColor, BarStyle, BukkitRunnable)}.
+     * Enums for replacements in {@link #timer(int, String, BarColor, BarStyle, BukkitRunnable)}.
      */
     public enum timerReplacement {
         /**
@@ -74,17 +74,15 @@ public class GamePlayer {
 
     /**
      * Creates a timer using a bossbar. It will run a BukkitRunnable when completed.
-     * @param p Player to give the timer to.
      * @param duration The duration of the timer.
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
      * @param colour The colour of the bossbar.
      * @param style The style of the bossbar.
      * @param tasktorun A BukkitRunnable to run when the timer expires.
      */
-    public BossBar timer(Player p, int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
+    public BossBar timer(int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
         double[] timer = {duration};
         BossBar bossbar = Bukkit.createBossBar(bossbarReplaceTitle(title, timer[0], duration - timer[0]), colour, style, BarFlag.PLAY_BOSS_MUSIC);
-        bossbar.addPlayer(p);
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
@@ -126,15 +124,13 @@ public class GamePlayer {
 
     /**
      * Creates a timer using a bossbar. It will run a BukkitRunnable when completed.
-     * @param p Player to give the timer to.
      * @param duration The duration of the timer.
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
      * @param colour The colour of the bossbar.
      * @param style The style of the bossbar.
      */
-    public BossBar timer(Player p, int duration, String title, BarColor colour, BarStyle style) {
+    public BossBar timer(int duration, String title, BarColor colour, BarStyle style) {
         BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
-        bossbar.addPlayer(p);
         double[] timer = {duration};
         BukkitRunnable task = new BukkitRunnable() {
             @Override
