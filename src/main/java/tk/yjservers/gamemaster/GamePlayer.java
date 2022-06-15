@@ -64,7 +64,7 @@ public class GamePlayer {
         /**
          * Add the name's of every Player to which the timer is visible.
          */
-        PLAYERS_SHOWN("%players_shown");
+        PLAYERS_SHOWN("%players_shown%");
 
 
         private final String string;
@@ -82,22 +82,19 @@ public class GamePlayer {
      * @param tasktorun A BukkitRunnable to run when the timer expires.
      */
     public BossBar timer(Player p, int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
-        BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
-        bossbar.addPlayer(p);
         double[] timer = {duration};
+        BossBar bossbar = Bukkit.createBossBar(bossbarReplaceTitle(title, timer[0], duration - timer[0]), colour, style, BarFlag.PLAY_BOSS_MUSIC);
+        bossbar.addPlayer(p);
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
                 bossbar.setProgress(BigDecimal.valueOf(timer[0]).divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).doubleValue());
 
-                title.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timer[0]));
-                title.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(duration - timer[0]));
                 List<String> list = new ArrayList<>();
                 for (Player pl : bossbar.getPlayers()) {
                     list.add(pl.getDisplayName());
                 }
-                title.replace(timerReplacement.PLAYERS_SHOWN.getString(), StringUtils.join(list, ", "));
-                bossbar.setTitle(title);
+                bossbar.setTitle(bossbarReplaceTitle(title, timer[0], duration - timer[0], list));
 
                 timer[0] = BigDecimal.valueOf(timer[0]).subtract(BigDecimal.valueOf(0.1)).doubleValue();
                 if (timer[0] <= 0) {
@@ -109,6 +106,22 @@ public class GamePlayer {
         };
         task.runTaskTimer(plugin, 0, 2);
         return bossbar;
+    }
+
+    // duration - timer[0]
+    private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed, List<String> playerList) {
+        String replacementTitle = title;
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timeLeft));
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(timeElapsed));
+        replacementTitle = replacementTitle.replace(timerReplacement.PLAYERS_SHOWN.getString(), StringUtils.join(playerList, ", "));
+        return replacementTitle;
+    }
+
+    private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed) {
+        String replacementTitle = title;
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timeLeft));
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(timeElapsed));
+        return replacementTitle;
     }
 
     /**
