@@ -289,13 +289,13 @@ public class GameServer {
         }
 
         File spigotyml = new File("spigot.yml");
+        String newcontent;
         if (OS.equals(OSTypes.Windows)) {
-            String newcontent = readFile(spigotyml).replaceAll("restart-script: .*", "restart-script: restart.bat");
-            writeFile(newcontent, spigotyml);
+            newcontent = readFile(spigotyml).replaceAll("restart-script: .*", "restart-script: restart.bat");
         } else {
-            String newcontent = readFile(spigotyml).replaceAll("restart-script: .*", "restart-script: restart.bat");
-            writeFile(newcontent, spigotyml);
+            newcontent = readFile(spigotyml).replaceAll("restart-script: .*", "restart-script: ./restart.sh");
         }
+        writeFile(newcontent, spigotyml);
         return true;
     }
 
