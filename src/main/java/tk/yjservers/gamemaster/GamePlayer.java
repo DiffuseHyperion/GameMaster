@@ -70,7 +70,7 @@ public class GamePlayer {
 
         private final String string;
         timerReplacement(String str) {string = str;}
-        public String getString() {return string;}
+        public String toString() {return string;}
     }
 
     /**
@@ -122,13 +122,13 @@ public class GamePlayer {
             public void run() {
                 bossbar.setProgress(BigDecimal.valueOf(timer[0]).divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).doubleValue());
 
-                title.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timer[0]));
-                title.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(duration - timer[0]));
+                title.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timer[0]));
+                title.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(duration - timer[0]));
                 List<String> list = new ArrayList<>();
                 for (Player pl : bossbar.getPlayers()) {
                     list.add(pl.getDisplayName());
                 }
-                title.replace(timerReplacement.PLAYERS_SHOWN.getString(), StringUtils.join(list, ", "));
+                title.replace(timerReplacement.PLAYERS_SHOWN.toString(), StringUtils.join(list, ", "));
                 bossbar.setTitle(title);
 
                 timer[0] = BigDecimal.valueOf(timer[0]).subtract(BigDecimal.valueOf(0.1)).doubleValue();
@@ -192,13 +192,13 @@ public class GamePlayer {
             public void run() {
                 bossbar.setProgress(BigDecimal.valueOf(timer[0]).divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).doubleValue());
 
-                title.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timer[0]));
-                title.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(duration - timer[0]));
+                title.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timer[0]));
+                title.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(duration - timer[0]));
                 List<String> list = new ArrayList<>();
                 for (Player pl : bossbar.getPlayers()) {
                     list.add(pl.getDisplayName());
                 }
-                title.replace(timerReplacement.PLAYERS_SHOWN.getString(), StringUtils.join(list, ", "));
+                title.replace(timerReplacement.PLAYERS_SHOWN.toString(), StringUtils.join(list, ", "));
                 bossbar.setTitle(title);
 
                 timer[0] = BigDecimal.valueOf(timer[0]).subtract(BigDecimal.valueOf(0.1)).doubleValue();
@@ -214,16 +214,16 @@ public class GamePlayer {
 
     private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed, List<String> playerList) {
         String replacementTitle = title;
-        replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timeLeft));
-        replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(timeElapsed));
-        replacementTitle = replacementTitle.replace(timerReplacement.PLAYERS_SHOWN.getString(), StringUtils.join(playerList, ", "));
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timeLeft));
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(timeElapsed));
+        replacementTitle = replacementTitle.replace(timerReplacement.PLAYERS_SHOWN.toString(), StringUtils.join(playerList, ", "));
         return replacementTitle;
     }
 
     private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed) {
         String replacementTitle = title;
-        replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.getString(), String.valueOf(timeLeft));
-        replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.getString(), String.valueOf(timeElapsed));
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timeLeft));
+        replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(timeElapsed));
         return replacementTitle;
     }
 }

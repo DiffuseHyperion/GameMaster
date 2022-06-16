@@ -220,7 +220,7 @@ public class GameServer {
 
         private final String lineTerminators;
         lineTerminators(String str) {lineTerminators = str;}
-        public String getString() {return lineTerminators;}
+        public String toString() {return lineTerminators;}
     }
 
     /**
@@ -288,10 +288,13 @@ public class GameServer {
                 break;
         }
 
+        File spigotyml = new File("spigot.yml");
         if (OS.equals(OSTypes.Windows)) {
-            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: restart.bat");
+            String newcontent = readFile(spigotyml).replaceAll("restart-script: .*", "restart-script: restart.bat");
+            writeFile(newcontent, spigotyml);
         } else {
-            checkAndEditYAML(new File("spigot.yml"), "settings.restart-script", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "restart-script: .*", "restart-script: ./restart.sh");
+            String newcontent = readFile(spigotyml).replaceAll("restart-script: .*", "restart-script: restart.bat");
+            writeFile(newcontent, spigotyml);
         }
         return true;
     }
