@@ -162,9 +162,9 @@ public class GameWorld {
         WorldBorder border = world.getWorldBorder();
         border.setCenter(0, 0);
         border.setSize(borderSize);
-        for (int i = 255; true; i = i - 1) {
+        for (int i = 255; true; i--) {
             if (!Objects.equals(world.getBlockAt(0, i, 0).getType(), Material.AIR)) {
-                if (setupSpawnPlatform && Objects.equals(world.getBlockAt(0, i, 0).getType(), Material.WATER)) {
+                if (setupSpawnPlatform && !world.getBlockAt(0, i, 0).getType().isSolid()) {
                     fillBlocks(new Location(world, -2, i, -2), new Location(world, 2, i, 2), Material.DIRT);
                 }
                 world.setSpawnLocation(0, i + 1, 0);
