@@ -1,24 +1,37 @@
 package tk.diffusehyperion.gamemaster;
 
+import me.tigerhix.lib.bossbar.Bossbar;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.javatuples.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
+import static tk.diffusehyperion.gamemaster.GameMaster.barLib;
 import static tk.diffusehyperion.gamemaster.GameMaster.plugin;
 
 public class GamePlayer {
+
+    public enum timerReplacement {
+        /**
+         * Add the timer's time left.
+         */
+        TIME_LEFT("%time_left%"),
+        /**
+         * Add the timer's elapsed time.
+         */
+        TIME_ELAPSED("%time_elapsed%");
+
+
+        private final String string;
+        timerReplacement(String str) {string = str;}
+        public String toString() {return string;}
+    }
 
     /**
      * Play a sound to all players.
@@ -50,109 +63,77 @@ public class GamePlayer {
         }
     }
 
-    /**
-     * Enums for replacements in {@link #timer(int, String, BarColor, BarStyle, BukkitRunnable)}.
-     */
-    public enum timerReplacement {
-        /**
-         * Add the timer's time left.
-         */
-        TIME_LEFT("%time_left%"),
-        /**
-         * Add the timer's elapsed time.
-         */
-        TIME_ELAPSED("%time_elapsed%"),
-        /**
-         * Add the name's of every Player to which the timer is visible.
-         */
-        PLAYERS_SHOWN("%players_shown%");
-
-
-        private final String string;
-        timerReplacement(String str) {string = str;}
-        public String toString() {return string;}
-    }
 
     /**
-     * Creates a timer using a bossbar. It will run a BukkitRunnable when completed.
+     * Creates a timer using a bossbar for a player. It will run a BukkitRunnable when completed.
+     * @param p Player to show the bossbar to.
      * @param duration The duration of the timer.
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
-     * @param colour The colour of the bossbar.
-     * @param style The style of the bossbar.
      * @param tasktorun A BukkitRunnable to run when the timer expires.
      */
-    public Pair<BossBar, BukkitRunnable> timer(int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
+    public Pair<Bossbar, BukkitRunnable> timer(Player p, int duration, String title, @Nullable BukkitRunnable tasktorun) {
         BigDecimal[] timer = {BigDecimal.valueOf(duration)};
-        BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
-        bossbar.setProgress(1);
+        Bossbar bossbar = barLib.getBossbar(p);
+        bossbar.setPercentage(1f);
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
-                bossbar.setProgress(timer[0].divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).doubleValue());
+                bossbar.setPercentage(timer[0].divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).floatValue());
 
-                List<String> list = new ArrayList<>();
-                for (Player pl : bossbar.getPlayers()) {
-                    list.add(pl.getDisplayName());
-                }
-                bossbar.setTitle(bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue(), list));
+                bossbar.setMessage(bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue()));
 
                 timer[0] = timer[0].subtract(BigDecimal.valueOf(0.1));
                 if (timer[0].doubleValue() <= 0) {
-                    bossbar.removeAll();
-                    tasktorun.run();
+                    barLib.clearBossbar(p);
+                    if (tasktorun != null) {
+                        tasktorun.run();
+                    }
                     this.cancel();
                 }
             }
         };
         task.runTaskTimer(plugin, 0, 2);
+
         return new Pair<>(bossbar, task);
     }
 
     /**
      * Creates a timer using a bossbar.
+     * @param p Player to show the bossbar to.
      * @param duration The duration of the timer.
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
-     * @param colour The colour of the bossbar.
-     * @param style The style of the bossbar.
      */
-    public Pair<BossBar, BukkitRunnable> timer(int duration, String title, BarColor colour, BarStyle style) {
-        return timer(duration, title, colour, style, new BukkitRunnable() {
-            @Override
-            public void run() {
-            }
-        });
+    public Pair<Bossbar, BukkitRunnable> timer(Player p, int duration, String title) {
+        return timer(p, duration, title, null);
     }
 
     /**
      * Creates a timer using a bossbar. This timer allows for custom variables. It will run a BukkitRunnable when completed.
+     * @param p Player to show the bossbar to.
      * @param duration The duration of the timer.
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
-     * @param colour The colour of the bossbar.
-     * @param style The style of the bossbar.
-     * @see #timer(int, String, BarColor, BarStyle, BukkitRunnable)
+     * @param replaceList Hashmap of placeholders to their value.
+     * @see #timer(Player, int, String, BukkitRunnable)
      */
-    public Pair<BossBar, BukkitRunnable> customTimer(int duration, String title, BarColor colour, BarStyle style, HashMap<String, String> replaceList, BukkitRunnable tasktorun) {
+    public Pair<Bossbar, BukkitRunnable> customTimer(Player p, int duration, String title, HashMap<String, String> replaceList, BukkitRunnable tasktorun) {
         BigDecimal[] timer = {BigDecimal.valueOf(duration)};
-        BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
-        bossbar.setProgress(1);
+        Bossbar bossbar = barLib.getBossbar(p);
+        bossbar.setPercentage(1);
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
-                bossbar.setProgress(timer[0].divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).doubleValue());
-
-                List<String> list = new ArrayList<>();
-                for (Player pl : bossbar.getPlayers()) {
-                    list.add(pl.getDisplayName());
-                }
+                bossbar.setPercentage(timer[0].divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).floatValue());
 
                 String tempTitle;
-                tempTitle = bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue(), list);
-                bossbar.setTitle(customBossbarReplaceTitle(tempTitle, replaceList));
+                tempTitle = bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue());
+                bossbar.setMessage(customBossbarReplaceTitle(tempTitle, replaceList));
 
                 timer[0] = timer[0].subtract(BigDecimal.valueOf(0.1));
                 if (timer[0].doubleValue() <= 0) {
-                    bossbar.removeAll();
-                    tasktorun.run();
+                    barLib.clearBossbar(p);
+                    if (tasktorun != null) {
+                        tasktorun.run();
+                    }
                     this.cancel();
                 }
             }
@@ -163,26 +144,20 @@ public class GamePlayer {
 
     /**
      * Creates a timer using a bossbar. This timer allows for custom variables.
+     * @param p Player to show the bossbar to.
      * @param duration The duration of the timer.
      * @param title The title of the timer. See {@link timerReplacement} if you want to add variables from the timer to the title.
-     * @param colour The colour of the bossbar.
-     * @param style The style of the bossbar.
-     * @see #timer(int, String, BarColor, BarStyle)
+     * @param replaceList Hashmap of placeholders to their value.
+     * @see #customTimer(Player, int, String, HashMap, BukkitRunnable) 
      */
-    public Pair<BossBar, BukkitRunnable> customTimer(int duration, String title, BarColor colour, BarStyle style, HashMap<String, String> replaceList) {
-        return customTimer(duration, title, colour, style, replaceList, new BukkitRunnable() {
-            @Override
-            public void run() {
-            }
-        });
+    public Pair<Bossbar, BukkitRunnable> customTimer(Player p, int duration, String title, HashMap<String, String> replaceList) {
+        return customTimer(p, duration, title, replaceList, null);
     }
 
-
-    private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed, List<String> playerList) {
+    private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed) {
         String replacementTitle = title;
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timeLeft));
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(timeElapsed));
-        replacementTitle = replacementTitle.replace(timerReplacement.PLAYERS_SHOWN.toString(), String.join(", ", playerList));
         return replacementTitle;
     }
 
