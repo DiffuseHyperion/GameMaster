@@ -63,7 +63,7 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>bossbarlib-diffuse</id>
+            <id>BossbarLib-repo</id>
             <url>https://raw.githubusercontent.com/DiffuseHyperion/BossbarLib/repository</url>
         </repository>
     </repositories>
@@ -89,8 +89,9 @@
         </dependency>
         <dependency>
             <groupId>me.tigerhix.lib</groupId>
-            <artifactId>bossbar</artifactId>
+            <artifactId>BossbarLib</artifactId>
             <version>diffuse-2.0.5</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
