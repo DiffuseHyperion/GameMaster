@@ -167,7 +167,7 @@ public class GameWorld {
                 if (setupSpawnPlatform && !world.getBlockAt(0, i, 0).getType().isSolid()) {
                     fillBlocks(new Location(world, -2, i, -2), new Location(world, 2, i, 2), Material.DIRT);
                 }
-                world.setSpawnLocation(0, i + 1, 0);
+                world.setSpawnLocation(0, i + 2, 0);
                 break;
             }
         }

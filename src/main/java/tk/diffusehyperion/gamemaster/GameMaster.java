@@ -18,7 +18,7 @@ public final class GameMaster extends JavaPlugin implements CommandExecutor {
 
     @Override
     public void onEnable() {
-        barLib = BossbarLib.createFor(this);
+        barLib = BossbarLib.createFor(this, 2);
         Bukkit.getLogger().info("GameMaster successfully enabled!");
     }
 

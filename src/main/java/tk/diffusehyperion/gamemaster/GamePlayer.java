@@ -82,7 +82,7 @@ public class GamePlayer {
 
                 bossbar.setMessage(bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue()));
 
-                timer[0] = timer[0].subtract(BigDecimal.valueOf(0.1));
+                timer[0] = timer[0].subtract(BigDecimal.ONE);
                 if (timer[0].doubleValue() <= 0) {
                     barLib.clearBossbar(p);
                     if (tasktorun != null) {
@@ -92,7 +92,7 @@ public class GamePlayer {
                 }
             }
         };
-        task.runTaskTimer(plugin, 0, 2);
+        task.runTaskTimer(plugin, 0, 20);
 
         return new Pair<>(bossbar, task);
     }
@@ -128,7 +128,7 @@ public class GamePlayer {
                 tempTitle = bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue());
                 bossbar.setMessage(customBossbarReplaceTitle(tempTitle, replaceList));
 
-                timer[0] = timer[0].subtract(BigDecimal.valueOf(0.1));
+                timer[0] = timer[0].subtract(BigDecimal.ONE);
                 if (timer[0].doubleValue() <= 0) {
                     barLib.clearBossbar(p);
                     if (tasktorun != null) {
@@ -138,7 +138,7 @@ public class GamePlayer {
                 }
             }
         };
-        task.runTaskTimer(plugin, 0, 2);
+        task.runTaskTimer(plugin, 0, 20);
         return new Pair<>(bossbar, task);
     }
 
