@@ -1,0 +1,6 @@
+name: GameMaster
+version: '${project.version}'
+main: tk.diffusehyperion.gamemaster.GameMaster
+api-version: 1.13
+description: API for my minigame plugins
+load: STARTUP
