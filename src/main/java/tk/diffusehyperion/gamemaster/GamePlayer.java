@@ -8,8 +8,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.javatuples.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 
 import static tk.diffusehyperion.gamemaster.GameMaster.barLib;
@@ -72,18 +70,18 @@ public class GamePlayer {
      * @param tasktorun A BukkitRunnable to run when the timer expires.
      */
     public Pair<Bossbar, BukkitRunnable> timer(Player p, int duration, String title, @Nullable BukkitRunnable tasktorun) {
-        BigDecimal[] timer = {BigDecimal.valueOf(duration)};
+        int[] timer = {duration};
         Bossbar bossbar = barLib.getBossbar(p);
         bossbar.setPercentage(1f);
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
-                bossbar.setPercentage(timer[0].divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).floatValue());
+                bossbar.setPercentage((float) timer[0] / duration);
 
-                bossbar.setMessage(bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue()));
+                bossbar.setMessage(bossbarReplaceTitle(title, timer[0], duration - timer[0]));
 
-                timer[0] = timer[0].subtract(BigDecimal.ONE);
-                if (timer[0].doubleValue() <= 0) {
+                timer[0] -= 1;
+                if (timer[0] <= 0) {
                     barLib.clearBossbar(p);
                     if (tasktorun != null) {
                         tasktorun.run();
@@ -116,20 +114,20 @@ public class GamePlayer {
      * @see #timer(Player, int, String, BukkitRunnable)
      */
     public Pair<Bossbar, BukkitRunnable> customTimer(Player p, int duration, String title, HashMap<String, String> replaceList, BukkitRunnable tasktorun) {
-        BigDecimal[] timer = {BigDecimal.valueOf(duration)};
+        int[] timer = {duration};
         Bossbar bossbar = barLib.getBossbar(p);
         bossbar.setPercentage(1);
         BukkitRunnable task = new BukkitRunnable() {
             @Override
             public void run() {
-                bossbar.setPercentage(timer[0].divide(BigDecimal.valueOf(duration), 5, RoundingMode.HALF_EVEN).floatValue());
+                bossbar.setPercentage((float) timer[0] / duration);
 
                 String tempTitle;
-                tempTitle = bossbarReplaceTitle(title, timer[0].doubleValue(), duration - timer[0].doubleValue());
+                tempTitle = bossbarReplaceTitle(title, timer[0], duration - timer[0]);
                 bossbar.setMessage(customBossbarReplaceTitle(tempTitle, replaceList));
 
-                timer[0] = timer[0].subtract(BigDecimal.ONE);
-                if (timer[0].doubleValue() <= 0) {
+                timer[0] -= 1;
+                if (timer[0] <= 0) {
                     barLib.clearBossbar(p);
                     if (tasktorun != null) {
                         tasktorun.run();
@@ -154,7 +152,7 @@ public class GamePlayer {
         return customTimer(p, duration, title, replaceList, null);
     }
 
-    private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed) {
+    private String bossbarReplaceTitle(String title, int timeLeft, int timeElapsed) {
         String replacementTitle = title;
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timeLeft));
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(timeElapsed));

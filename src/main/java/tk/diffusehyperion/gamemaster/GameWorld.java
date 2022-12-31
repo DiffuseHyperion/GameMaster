@@ -171,7 +171,8 @@ public class GameWorld {
                 break;
             }
         }
-        world.setGameRuleValue("spawnRadius", String.valueOf(spawnRadius));
+
+        //interesting, if 0, 0 is in an ocean, the spawn platform will spawn correctly, but you spawn on the sea bed. tf is going on
         world.getWorldBorder().setWarningTime(warningTime);
         world.getWorldBorder().setWarningDistance(warningDist);
         world.setPVP(false);
