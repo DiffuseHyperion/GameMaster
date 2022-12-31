@@ -1,6 +1,6 @@
 package tk.diffusehyperion.gamemaster;
 
-import me.tigerhix.lib.bossbar.Bossbar;
+import me.tigerhix.BossbarLib.Bossbar;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

@@ -90,7 +90,7 @@
         <dependency>
             <groupId>me.tigerhix.lib</groupId>
             <artifactId>BossbarLib</artifactId>
-            <version>diffuse-2.0.5</version>
+            <version>diffuse-2.0.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
