@@ -202,9 +202,10 @@ public class GamePlayer {
 
         }
     }
-    public static String getTimerString(float elapsed, float max, int notches, TimerColours colours) {
+    public static String getTimerString(float elapsed, float max, int notches, GamePlayer.TimerColours colours) {
         float percentage = elapsed / max;
         int filledNotches = Math.round(percentage * notches);
+        int emptyNotches = Math.round(notches - filledNotches);
         StringBuilder builder = new StringBuilder();
 
         for (ChatColor bc : colours.borderColour) {
@@ -224,7 +225,7 @@ public class GamePlayer {
         for (ChatColor ec : colours.emptyColour) {
             builder.append(ec.toString());
         }
-        for (int i = 0; i < max - filledNotches; i++) {
+        for (int i = 0; i < emptyNotches; i++) {
             builder.append("|");
         }
         builder.append(ChatColor.RESET);
