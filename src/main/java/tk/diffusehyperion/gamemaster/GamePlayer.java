@@ -96,7 +96,8 @@ public class GamePlayer {
                 stringBuffer.delete(0, stringBuffer.length());
 
                 stringBuffer.append(getTimerStringWLogic(timer[0], duration, timerNotches, colours));
-                stringBuffer.append(" ");
+                stringBuffer.append(" / ");
+                stringBuffer.append(ChatColor.RESET);
                 if (Objects.isNull(replaceList)) {
                     stringBuffer.append(replaceTitle(title, timer[0], BigDecimal.valueOf(duration).subtract(timer[0])));
                 } else {
