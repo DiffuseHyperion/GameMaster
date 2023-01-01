@@ -97,7 +97,6 @@ public class GamePlayer {
 
                 stringBuffer.append(getTimerStringWLogic(timer[0], duration, timerNotches, colours));
                 stringBuffer.append(ChatColor.RESET);
-                stringBuffer.append(" / ");
                 if (Objects.isNull(colours)) {
                     TimerColours tc = new TimerColours(null, null, null, null);
                     for (ChatColor color : tc.delimeterColour) {
@@ -108,6 +107,7 @@ public class GamePlayer {
                         stringBuffer.append(color);
                     }
                 }
+                stringBuffer.append(" / ");
                 stringBuffer.append(ChatColor.RESET);
                 if (Objects.isNull(replaceList)) {
                     stringBuffer.append(replaceTitle(title, timer[0], BigDecimal.valueOf(duration).subtract(timer[0])));
