@@ -40,7 +40,7 @@ public class GamePlayer {
      * This will play the sound at max volume, and at 1x speed.
      * @param sound Sound to be played.
      */
-    public void playSoundToAll(Sound sound) {
+    public static void playSoundToAll(Sound sound) {
         playSoundToAll(sound, 1F, 1F);
     }
 
@@ -58,7 +58,7 @@ public class GamePlayer {
      * @param pitch Pitch/Speed for the sound to be played at. Default is 1.
      *
      */
-    public void playSoundToAll(Sound sound, Float volume, Float pitch) {
+    public static void playSoundToAll(Sound sound, Float volume, Float pitch) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation(), sound, volume, pitch);
         }
@@ -76,7 +76,7 @@ public class GamePlayer {
      * @see TimerColours
      * @see tk.diffusehyperion.gamemaster.ActionBars.ActionBarSender#sendUpdatingActionBar(Player, CompletableStringBuffer, int)
      */
-    public Pair<CompletableStringBuffer, BukkitRunnable> timer(float duration, String title, @Nullable BukkitRunnable tasktorun, @Nullable HashMap<String, String> replaceList, @Nullable Integer timerNotches, @Nullable TimerColours colours) {
+    public static Pair<CompletableStringBuffer, BukkitRunnable> timer(float duration, String title, @Nullable BukkitRunnable tasktorun, @Nullable HashMap<String, String> replaceList, @Nullable Integer timerNotches, @Nullable TimerColours colours) {
         BigDecimal[] timer = {BigDecimal.valueOf(duration).setScale(1, RoundingMode.HALF_UP)};
         CompletableStringBuffer buffer = new CompletableStringBuffer();
         StringBuffer stringBuffer = buffer.stringBuffer;
@@ -111,7 +111,7 @@ public class GamePlayer {
         return new Pair<>(buffer, task);
     }
 
-    public String getTimerStringWLogic(BigDecimal timer, float duration, @javax.annotation.Nullable Integer timerNotches, @javax.annotation.Nullable TimerColours colours) {
+    public static String getTimerStringWLogic(BigDecimal timer, float duration, @javax.annotation.Nullable Integer timerNotches, @javax.annotation.Nullable TimerColours colours) {
         if (Objects.isNull(colours)) {
             // no colour
             if (Objects.isNull(timerNotches)) {
@@ -132,15 +132,15 @@ public class GamePlayer {
             }
         }
     }
-    public String getTimerString(float elapsed, float max, TimerColours colours) {
+    public static String getTimerString(float elapsed, float max, TimerColours colours) {
         return getTimerString(elapsed, max, 10, colours);
     }
-    public String getTimerString(float elapsed, float max) {
-        return getTimerString(elapsed, max, 10, new TimerColours(null, null, null));
+    public static String getTimerString(float elapsed, float max) {
+        return getTimerString(elapsed, max, 10, new TimerColours(null, null, null, null));
     }
 
-    public String getTimerString(float elapsed, float max, int notches) {
-        return getTimerString(elapsed, max, notches, new TimerColours(null, null, null));
+    public static String getTimerString(float elapsed, float max, int notches) {
+        return getTimerString(elapsed, max, notches, new TimerColours(null, null, null, null));
     }
 
     /**
@@ -165,11 +165,18 @@ public class GamePlayer {
         public ChatColor[] emptyColour;
         public ChatColor[] filledColour;
 
-        public TimerColours(@Nullable ChatColor[] borderColour, @Nullable ChatColor[] emptyColour, @Nullable ChatColor[] filledColour) {
+        public ChatColor[] delimeterColour;
+
+        public TimerColours(@Nullable ChatColor[] borderColour, @Nullable ChatColor[] delimeterColour, @Nullable ChatColor[] emptyColour, @Nullable ChatColor[] filledColour) {
             if (Objects.nonNull(borderColour)) {
                 this.borderColour = borderColour;
             } else {
                 this.borderColour = asColourArray(ChatColor.DARK_RED, ChatColor.BOLD);
+            }
+            if (Objects.nonNull(delimeterColour)) {
+                this.delimeterColour = delimeterColour;
+            } else {
+                this.delimeterColour = asColourArray(ChatColor.GRAY);
             }
             if (Objects.nonNull(emptyColour)) {
                 this.emptyColour = emptyColour;
@@ -184,7 +191,7 @@ public class GamePlayer {
 
         }
     }
-    public String getTimerString(float elapsed, float max, int notches, TimerColours colours) {
+    public static String getTimerString(float elapsed, float max, int notches, TimerColours colours) {
         float percentage = elapsed / max;
         int filledNotches = Math.round(percentage * notches);
         StringBuilder builder = new StringBuilder();
@@ -219,14 +226,14 @@ public class GamePlayer {
         return builder.toString();
     }
 
-    private String replaceTitle(String title, BigDecimal timeLeft, BigDecimal timeElapsed) {
+    public static String replaceTitle(String title, BigDecimal timeLeft, BigDecimal timeElapsed) {
         String replacementTitle = title;
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.toString(), timeLeft.toString());
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.toString(), timeElapsed.toString());
         return replacementTitle;
     }
 
-    private String customBossbarReplaceTitle(String title, HashMap<String, String> replaceList) {
+    public static String customBossbarReplaceTitle(String title, HashMap<String, String> replaceList) {
         String replacementTitle = title;
         for (String s : replaceList.keySet()) {
             replacementTitle = replacementTitle.replace(s, replaceList.get(s));
