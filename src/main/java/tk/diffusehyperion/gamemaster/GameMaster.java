@@ -1,6 +1,5 @@
 package tk.diffusehyperion.gamemaster;
 
-import me.tigerhix.BossbarLib.BossbarLib;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.Plugin;
@@ -12,13 +11,10 @@ public final class GameMaster extends JavaPlugin implements CommandExecutor {
     public GameServer GameServer;
     public GameWorld GameWorld;
 
-    static Plugin plugin;
-
-    static BossbarLib barLib;
+    public static Plugin plugin;
 
     @Override
     public void onEnable() {
-        barLib = BossbarLib.createFor(this, 2);
         Bukkit.getLogger().info("GameMaster successfully enabled!");
     }
 

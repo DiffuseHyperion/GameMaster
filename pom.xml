@@ -6,7 +6,7 @@
 
     <groupId>tk.diffusehyperion</groupId>
     <artifactId>GameMaster</artifactId>
-    <version>1.0.1-1.8</version>
+    <version>1.1.0-1.8</version>
     <packaging>jar</packaging>
 
     <name>GameMaster</name>
@@ -71,7 +71,7 @@
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <artifactId>spigot</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -79,18 +79,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.javatuples/javatuples -->
-        <dependency>
-            <groupId>org.javatuples</groupId>
-            <artifactId>javatuples</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>me.tigerhix.lib</groupId>
-            <artifactId>BossbarLib</artifactId>
-            <version>diffuse-2.0.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
