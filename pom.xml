@@ -6,7 +6,7 @@
 
     <groupId>tk.diffusehyperion</groupId>
     <artifactId>GameMaster</artifactId>
-    <version>1.0.0-1.13</version>
+    <version>1.0.1-1.13</version>
     <packaging>jar</packaging>
 
     <name>GameMaster</name>
@@ -51,6 +51,13 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <extensions>
+            <extension>
+                <groupId>com.gkatzioura.maven.cloud</groupId>
+                <artifactId>azure-storage-wagon</artifactId>
+                <version>1.8</version>
+            </extension>
+        </extensions>
     </build>
 
     <repositories>
@@ -78,4 +85,15 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>diffusehyperion-maven-repo</id>
+            <url>bs://diffusehyperion/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>diffusehyperion-maven-repo</id>
+            <url>bs://diffusehyperion/releases</url>
+        </repository>
+    </distributionManagement>
 </project>

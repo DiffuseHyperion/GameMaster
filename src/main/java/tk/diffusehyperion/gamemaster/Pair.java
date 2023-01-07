@@ -2,19 +2,19 @@ package tk.diffusehyperion.gamemaster;
 
 public class Pair<X, Y> {
 
-    private final X value1;
-    private final Y value2;
+    private final X value0;
+    private final Y value1;
 
-    public Pair(X value1, Y value2) {
+    public Pair(X value0, Y value1) {
+        this.value0 = value0;
         this.value1 = value1;
-        this.value2 = value2;
     }
 
-    public X getValue1() {
+    public X getValue0() {
+        return value0;
+    }
+
+    public Y getValue1() {
         return value1;
-    }
-
-    public Y getValue2() {
-        return value2;
     }
 }
