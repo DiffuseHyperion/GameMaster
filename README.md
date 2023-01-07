@@ -1,5 +1,5 @@
 # GameMaster
-Contains essential methods to my minigame plugins
+A plugin containing essential methods for my minigame plugins
 
 Plugins dependent on this plugin:
 - [LavaRising](https://github.com/DiffuseHyperion/LavaRising)
