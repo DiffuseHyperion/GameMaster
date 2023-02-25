@@ -6,7 +6,7 @@
 
     <groupId>tk.diffusehyperion</groupId>
     <artifactId>GameMaster</artifactId>
-    <version>1.0.2-1.13</version>
+    <version>1.0.2.1-1.13</version>
     <packaging>jar</packaging>
 
     <name>GameMaster</name>
