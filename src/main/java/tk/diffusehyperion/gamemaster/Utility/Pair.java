@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster;
+package tk.diffusehyperion.gamemaster.Utility;
 
 public class Pair<X, Y> {
 

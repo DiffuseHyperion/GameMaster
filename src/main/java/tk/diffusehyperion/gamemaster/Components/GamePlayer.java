@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster;
+package tk.diffusehyperion.gamemaster.Components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -8,6 +8,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import tk.diffusehyperion.gamemaster.Utility.Pair;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -174,6 +175,12 @@ public class GamePlayer {
             public void run() {
             }
         });
+    }
+
+    public void showBossbarToAll(BossBar bossBar) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            bossBar.addPlayer(p);
+        }
     }
 
 

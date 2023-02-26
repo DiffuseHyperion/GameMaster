@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster;
+package tk.diffusehyperion.gamemaster.Components;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Random;
 
 public class GameWorld {
+
+    private final GameServer GameServer = new GameServer();
 
     /**
      * Creates a world.
@@ -66,7 +68,7 @@ public class GameWorld {
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
     public World createWorld() throws IOException {
-        return createWorld(new GameServer().readServerProperties("level-name"), new Random().nextLong());
+        return createWorld(GameServer.readServerProperties("level-name"), new Random().nextLong());
     }
 
     /**
@@ -86,7 +88,7 @@ public class GameWorld {
      * Deletes a world. It's name will be the one specified under `level-name` in server.properties. This should be in onLoad().
      */
     public void deleteWorld() throws IOException {
-        deleteWorld(new GameServer().readServerProperties("level-name"));
+        deleteWorld(GameServer.readServerProperties("level-name"));
     }
 
     /**
@@ -208,6 +210,6 @@ public class GameWorld {
      * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
      */
     public void resetWorld() throws IOException {
-        resetWorld(new GameServer().readServerProperties("level-name"));
+        resetWorld(GameServer.readServerProperties("level-name"));
     }
 }

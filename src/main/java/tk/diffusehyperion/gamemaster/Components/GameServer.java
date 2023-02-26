@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster;
+package tk.diffusehyperion.gamemaster.Components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -11,6 +11,11 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class GameServer {
+
+    /**
+     * Boolean showing if someone had joined the server before.
+     */
+    public static boolean playersJoinedBefore = false;
 
     /**
      * Read a property in server.properties.
@@ -233,7 +238,7 @@ public class GameServer {
      * @return If the setup was required.
      */
     public boolean setupRestart() throws IOException, IllegalArgumentException, InvalidConfigurationException {
-        return setupRestart(getOS(), getServerJar().getName());
+        return setupRestart(getOS(), Objects.requireNonNull(getServerJar()).getName());
     }
 
     /**
@@ -245,7 +250,7 @@ public class GameServer {
      * @return If the setup was required.
      */
     public boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException, InvalidConfigurationException {
-        return setupRestart(OS, getServerJar().getName());
+        return setupRestart(OS, Objects.requireNonNull(getServerJar()).getName());
     }
 
     /**
