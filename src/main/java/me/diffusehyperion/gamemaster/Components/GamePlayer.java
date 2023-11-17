@@ -26,7 +26,7 @@ public class GamePlayer {
      * This will play the sound at max volume, and at 1x speed.
      * @param sound Sound to be played.
      */
-    public void playSoundToAll(Sound sound) {
+    public static void playSoundToAll(Sound sound) {
         playSoundToAll(sound, 1F, 1F);
     }
 
@@ -44,7 +44,7 @@ public class GamePlayer {
      * @param pitch Pitch/Speed for the sound to be played at. Default is 1.
      *
      */
-    public void playSoundToAll(Sound sound, Float volume, Float pitch) {
+    public static void playSoundToAll(Sound sound, Float volume, Float pitch) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p.getLocation(), sound, volume, pitch);
         }
@@ -81,7 +81,7 @@ public class GamePlayer {
      * @param style The style of the bossbar.
      * @param tasktorun A BukkitRunnable to run when the timer expires.
      */
-    public Pair<BossBar, BukkitRunnable> timer(int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
+    public static Pair<BossBar, BukkitRunnable> timer(int duration, String title, BarColor colour, BarStyle style, BukkitRunnable tasktorun) {
         BigDecimal[] timer = {BigDecimal.valueOf(duration)};
         BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
         bossbar.setProgress(1);
@@ -115,7 +115,7 @@ public class GamePlayer {
      * @param colour The colour of the bossbar.
      * @param style The style of the bossbar.
      */
-    public Pair<BossBar, BukkitRunnable> timer(int duration, String title, BarColor colour, BarStyle style) {
+    public static Pair<BossBar, BukkitRunnable> timer(int duration, String title, BarColor colour, BarStyle style) {
         return timer(duration, title, colour, style, new BukkitRunnable() {
             @Override
             public void run() {
@@ -131,7 +131,7 @@ public class GamePlayer {
      * @param style The style of the bossbar.
      * @see #timer(int, String, BarColor, BarStyle, BukkitRunnable)
      */
-    public Pair<BossBar, BukkitRunnable> customTimer(int duration, String title, BarColor colour, BarStyle style, HashMap<String, String> replaceList, BukkitRunnable tasktorun) {
+    public static Pair<BossBar, BukkitRunnable> customTimer(int duration, String title, BarColor colour, BarStyle style, HashMap<String, String> replaceList, BukkitRunnable tasktorun) {
         BigDecimal[] timer = {BigDecimal.valueOf(duration)};
         BossBar bossbar = Bukkit.createBossBar(title, colour, style, BarFlag.PLAY_BOSS_MUSIC);
         bossbar.setProgress(1);
@@ -169,7 +169,7 @@ public class GamePlayer {
      * @param style The style of the bossbar.
      * @see #timer(int, String, BarColor, BarStyle)
      */
-    public Pair<BossBar, BukkitRunnable> customTimer(int duration, String title, BarColor colour, BarStyle style, HashMap<String, String> replaceList) {
+    public static Pair<BossBar, BukkitRunnable> customTimer(int duration, String title, BarColor colour, BarStyle style, HashMap<String, String> replaceList) {
         return customTimer(duration, title, colour, style, replaceList, new BukkitRunnable() {
             @Override
             public void run() {
@@ -177,14 +177,14 @@ public class GamePlayer {
         });
     }
 
-    public void showBossbarToAll(BossBar bossBar) {
+    public static void showBossbarToAll(BossBar bossBar) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(p);
         }
     }
 
 
-    private String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed, List<String> playerList) {
+    private static String bossbarReplaceTitle(String title, Double timeLeft, Double timeElapsed, List<String> playerList) {
         String replacementTitle = title;
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_LEFT.toString(), String.valueOf(timeLeft));
         replacementTitle = replacementTitle.replace(timerReplacement.TIME_ELAPSED.toString(), String.valueOf(timeElapsed));
@@ -192,7 +192,7 @@ public class GamePlayer {
         return replacementTitle;
     }
 
-    private String customBossbarReplaceTitle(String title, HashMap<String, String> replaceList) {
+    private static String customBossbarReplaceTitle(String title, HashMap<String, String> replaceList) {
         String replacementTitle = title;
         for (String s : replaceList.keySet()) {
             replacementTitle = replacementTitle.replace(s, replaceList.get(s));

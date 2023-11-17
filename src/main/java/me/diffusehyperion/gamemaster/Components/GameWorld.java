@@ -9,9 +9,6 @@ import java.util.Objects;
 import java.util.Random;
 
 public class GameWorld {
-
-    private final GameServer GameServer = new GameServer();
-
     /**
      * Creates a world.
      * <p>
@@ -22,7 +19,7 @@ public class GameWorld {
      * @param seed The seed for the world.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld(String worldName, Long seed, World.Environment env, WorldType type) {
+    public static World createWorld(String worldName, Long seed, World.Environment env, WorldType type) {
         WorldCreator worldcreator = new WorldCreator(worldName);
         worldcreator.seed(seed);
         worldcreator.environment(env);
@@ -40,7 +37,7 @@ public class GameWorld {
      * @param worldName The name of the created world.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld(String worldName, Long seed) {
+    public static World createWorld(String worldName, Long seed) {
         return createWorld(worldName, seed, World.Environment.NORMAL, WorldType.NORMAL);
     }
 
@@ -54,7 +51,7 @@ public class GameWorld {
      * @param worldName The name of the created world.
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld(String worldName) {
+    public static World createWorld(String worldName) {
         return createWorld(worldName, new Random().nextLong());
     }
 
@@ -67,7 +64,7 @@ public class GameWorld {
      * @see #createWorld(String, Long, World.Environment, WorldType)
      * @return Returns the created world, or if a world already exists with the provided name, the existing world.
      */
-    public World createWorld() throws IOException {
+    public static World createWorld() throws IOException {
         return createWorld(GameServer.readServerProperties("level-name"), new Random().nextLong());
     }
 
@@ -75,7 +72,7 @@ public class GameWorld {
      * Deletes a world. This should be in onLoad().
      * @param worldName The name of the deleted world.
      */
-    public void deleteWorld(String worldName) {
+    public static void deleteWorld(String worldName) {
         assert worldName != null;
         File oldworld = new File(Bukkit.getWorldContainer().getAbsolutePath() + "/" + worldName);
         do {
@@ -87,7 +84,7 @@ public class GameWorld {
     /**
      * Deletes a world. It's name will be the one specified under `level-name` in server.properties. This should be in onLoad().
      */
-    public void deleteWorld() throws IOException {
+    public static void deleteWorld() throws IOException {
         deleteWorld(GameServer.readServerProperties("level-name"));
     }
 
@@ -99,7 +96,7 @@ public class GameWorld {
      * @param loc2 Another corner of the area being filled.
      * @param blocktype The type of block to fill the area with.
      */
-    public void fillBlocks(Location loc1, Location loc2, Material blocktype) {
+    public static void fillBlocks(Location loc1, Location loc2, Material blocktype) {
         if (loc1.getWorld() != loc2.getWorld()) {
             throw new IllegalArgumentException("Location 1 and location 2's worlds must be the same!");
         }
@@ -160,7 +157,7 @@ public class GameWorld {
      * @param warningDist Warning distance for the border.
      * @param spawnRadius How much blocks you can spawn away from 0, 0.
      */
-    public void setupWorld(World world, boolean setupSpawnPlatform, Double borderSize, int warningTime, int warningDist, int spawnRadius) {
+    public static void setupWorld(World world, boolean setupSpawnPlatform, Double borderSize, int warningTime, int warningDist, int spawnRadius) {
         WorldBorder border = world.getWorldBorder();
         border.setCenter(0, 0);
         border.setSize(borderSize);
@@ -186,7 +183,7 @@ public class GameWorld {
      * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
      * @param name Name of the world being reset.
      */
-    public void resetWorld(String name) throws IOException {
+    public static void resetWorld(String name) throws IOException {
         // Getting and deleting the main world
         File world = new File(Bukkit.getWorldContainer(), name);
         FileUtils.deleteDirectory(world);
@@ -209,7 +206,7 @@ public class GameWorld {
      * <a href="https://github.com/Duckulus/Bingo/blob/master/src/main/java/de/amin/bingo/BingoPlugin.java#L94">Code seen here!</a>
      * @apiNote This should be done in onLoad()! The plugin does not need to be started at STARTUP.
      */
-    public void resetWorld() throws IOException {
+    public static void resetWorld() throws IOException {
         resetWorld(GameServer.readServerProperties("level-name"));
     }
 }

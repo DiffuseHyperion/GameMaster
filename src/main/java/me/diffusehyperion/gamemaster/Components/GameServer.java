@@ -24,7 +24,7 @@ public class GameServer {
      * @param propertyName Name of the property to check.
      * @return Value of the property.
      */
-    public String readServerProperties(String propertyName) throws IOException {
+    public static String readServerProperties(String propertyName) throws IOException {
         File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
         FileInputStream stream = new FileInputStream(propertiesFile);
         Properties properties = new Properties();
@@ -39,7 +39,7 @@ public class GameServer {
      * @param newContent What should the correct line look like.
      * @return If a change was required.
      */
-    public boolean checkAndEditServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newContent) throws IOException {
+    public static boolean checkAndEditServerProperties(String propertyToCheck, String correctConfig, String oldContent, String newContent) throws IOException {
         if (!Objects.equals(readServerProperties(propertyToCheck), correctConfig)) {
             File propertiesFile = new File(Bukkit.getWorldContainer(), "server.properties");
             String newcontent = readFile(propertiesFile).replaceAll(oldContent, newContent);
@@ -58,7 +58,7 @@ public class GameServer {
      * @param property The property in the file to check. (Example: settings.allow-end)
      * @return The property value.
      */
-    public String readYMLFile(File ymlFile, String property) throws IOException, InvalidConfigurationException {
+    public static String readYMLFile(File ymlFile, String property) throws IOException, InvalidConfigurationException {
         YamlConfiguration ymlConfig = new YamlConfiguration();
         ymlConfig.load(ymlFile);
         return ymlConfig.getString(property);
@@ -73,7 +73,7 @@ public class GameServer {
      * @param newContent What should the correct line look like.
      * @return If a change was required.
      */
-    public boolean checkAndEditYAML(File fileToCheck, String propertyToCheck, String correctConfig, String oldContent, String newContent) throws IOException, InvalidConfigurationException {
+    public static boolean checkAndEditYAML(File fileToCheck, String propertyToCheck, String correctConfig, String oldContent, String newContent) throws IOException, InvalidConfigurationException {
         String valueOfProperty = readYMLFile(fileToCheck, propertyToCheck);
         // the value of neededProperty
 
@@ -89,7 +89,7 @@ public class GameServer {
     /**
      * Restarts a server.
      */
-    public void restart() {
+    public static void restart() {
         Bukkit.spigot().restart();
     }
 
@@ -98,7 +98,7 @@ public class GameServer {
      * @param file The file to read.
      * @return The string of contents. This includes line separators.
      */
-    public String readFile(File file) {
+    public static String readFile(File file) {
         StringBuilder builder = new StringBuilder();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -121,7 +121,7 @@ public class GameServer {
      * @param content The content to write.
      * @param file The file to be written to.
      */
-    public void writeFile(String content, File file) throws IOException {
+    public static void writeFile(String content, File file) throws IOException {
         FileWriter writer = new FileWriter(file);
         writer.write(content);
         writer.close();
@@ -132,7 +132,7 @@ public class GameServer {
      * This will fail if there is another jar file in the server's root directory.
      * @return Server's jar file.
      */
-    public File getServerJar() {
+    public static File getServerJar() {
         for (final File file : Objects.requireNonNull(Bukkit.getWorldContainer().listFiles())) {
             final String[] split = file.getName().split("\\.");
             if (split[split.length - 1].equals("jar")) {
@@ -150,7 +150,7 @@ public class GameServer {
      * @param enableFlight Disable minecraft's anticheat? (it sucks)
      * @return If a change was required.
      */
-    public boolean checkForServerProperties(boolean disableSpawnProtection, boolean disableNether, boolean disableEnd, boolean enableFlight) throws IOException, InvalidConfigurationException {
+    public static boolean checkForServerProperties(boolean disableSpawnProtection, boolean disableNether, boolean disableEnd, boolean enableFlight) throws IOException, InvalidConfigurationException {
         boolean neededChange = false;
         if (disableSpawnProtection) {
             neededChange = checkAndEditServerProperties("spawn-protection", "0", "spawn-protection=\\d+", "spawn-protection=0");
@@ -173,7 +173,7 @@ public class GameServer {
      * @see #checkForServerProperties(boolean, boolean, boolean, boolean)
      * @return If a change was required.
      */
-    public boolean checkForServerProperties() throws IOException, InvalidConfigurationException {
+    public static boolean checkForServerProperties() throws IOException, InvalidConfigurationException {
         return checkForServerProperties(true, true, true, true);
     }
 
@@ -194,7 +194,7 @@ public class GameServer {
      * @see OSTypes
      * @return The operating system.
      */
-    public OSTypes getOS() {
+    public static OSTypes getOS() {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
             return OSTypes.Windows;
@@ -237,7 +237,7 @@ public class GameServer {
      * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
      * @return If the setup was required.
      */
-    public boolean setupRestart() throws IOException, IllegalArgumentException, InvalidConfigurationException {
+    public static boolean setupRestart() throws IOException, IllegalArgumentException, InvalidConfigurationException {
         return setupRestart(getOS(), Objects.requireNonNull(getServerJar()).getName());
     }
 
@@ -249,7 +249,7 @@ public class GameServer {
      * @param OS The OS of the system. {@link #getOS()}
      * @return If the setup was required.
      */
-    public boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException, InvalidConfigurationException {
+    public static boolean setupRestart(OSTypes OS) throws IOException, IllegalArgumentException, InvalidConfigurationException {
         return setupRestart(OS, Objects.requireNonNull(getServerJar()).getName());
     }
 
@@ -260,7 +260,7 @@ public class GameServer {
      * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
      * @return If the setup was required.
      */
-    public boolean setupRestart(String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
+    public static boolean setupRestart(String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
         return setupRestart(getOS(), serverJar);
     }
 
@@ -269,7 +269,7 @@ public class GameServer {
      * @apiNote Mac and Solaris setups are UNTESTED! They will probably break lol
      * @return If the setup was required.
      */
-    public boolean setupRestart(OSTypes OS, String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
+    public static boolean setupRestart(OSTypes OS, String serverJar) throws IOException, IllegalArgumentException, InvalidConfigurationException {
         if (restartSetup()) {
             return false;
         }
@@ -308,7 +308,7 @@ public class GameServer {
      * Check if restarting is configured.
      * @return If it is configured.
      */
-    public boolean restartSetup() throws IOException, InvalidConfigurationException {
+    public static boolean restartSetup() throws IOException, InvalidConfigurationException {
         String value = readYMLFile(new File("spigot.yml"), "settings.restart-script");
         String restartScriptName = value.replace("./", "");
         File restartScript = new File(restartScriptName);
@@ -322,7 +322,7 @@ public class GameServer {
      * @param filename The config name.
      * @return The FileConfiguration of the file.
      */
-    public FileConfiguration getConfig(JavaPlugin plugin, String filename) {
+    public static FileConfiguration getConfig(JavaPlugin plugin, String filename) {
         // load the file's config
         YamlConfiguration config = new YamlConfiguration();
         File file = new File(plugin.getDataFolder(), filename);
