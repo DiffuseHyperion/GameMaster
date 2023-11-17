@@ -1,10 +1,10 @@
-package tk.diffusehyperion.gamemaster;
+package me.diffusehyperion.gamemaster;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import tk.diffusehyperion.gamemaster.Events.FirstPlayerJoinEvent.FirstPlayerJoinEventHandler;
+import me.diffusehyperion.gamemaster.Events.FirstPlayerJoinEvent.FirstPlayerJoinEventHandler;
 
 public final class GameMaster extends JavaPlugin implements CommandExecutor {
 

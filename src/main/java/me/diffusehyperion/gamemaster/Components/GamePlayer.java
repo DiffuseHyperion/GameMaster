@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster.Components;
+package me.diffusehyperion.gamemaster.Components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -8,7 +8,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import tk.diffusehyperion.gamemaster.Utility.Pair;
+import me.diffusehyperion.gamemaster.Utility.Pair;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static tk.diffusehyperion.gamemaster.GameMaster.plugin;
+import static me.diffusehyperion.gamemaster.GameMaster.plugin;
 
 public class GamePlayer {
 

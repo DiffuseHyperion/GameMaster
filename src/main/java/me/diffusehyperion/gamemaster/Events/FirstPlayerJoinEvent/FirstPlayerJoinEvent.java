@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster.Events.FirstPlayerJoinEvent;
+package me.diffusehyperion.gamemaster.Events.FirstPlayerJoinEvent;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;

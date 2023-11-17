@@ -1,10 +1,10 @@
-package tk.diffusehyperion.gamemaster.Events.FirstPlayerJoinEvent;
+package me.diffusehyperion.gamemaster.Events.FirstPlayerJoinEvent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import tk.diffusehyperion.gamemaster.Components.GameServer;
+import me.diffusehyperion.gamemaster.Components.GameServer;
 
 public class FirstPlayerJoinEventHandler implements Listener {
     public static boolean playerJoined = false;

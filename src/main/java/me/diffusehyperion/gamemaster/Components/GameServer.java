@@ -1,4 +1,4 @@
-package tk.diffusehyperion.gamemaster.Components;
+package me.diffusehyperion.gamemaster.Components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
